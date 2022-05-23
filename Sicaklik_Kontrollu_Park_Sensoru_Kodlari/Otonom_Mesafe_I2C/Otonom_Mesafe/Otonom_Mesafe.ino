@@ -1,6 +1,6 @@
 #include <OneWire.h>// OneWire kütüphanesini ekliyoruz.
-#include<LiquidCrystal.h>
-LiquidCrystal lcd(8,7,6,5,4,3);
+#include<LiquidCrystal_I2C.h>
+LiquidCrystal_I2C lcd(0x27, 16, 2);
 
 // Sıcaklık sensörünü bağladığımız dijital pini 2 olarak belirliyoruz.
 int DS18B20_Pin = 2; 
@@ -8,19 +8,25 @@ int DS18B20_Pin = 2;
 // Sıcaklık Sensörü Giriş-Çıkışı
 OneWire ds(DS18B20_Pin);  // 2. Dijital pinde.
 
-const int trig = 12;
-const int echo = 13;
+const int trig = 11;
+const int echo = 12;
 
 int sure = 0,mesafe = 0;
 float hiz = 0,degisken = 0;
 
-const int uyari = 11;
+const int uyari_led_kirmizi = 8;
+const int uyari_led_sari = 9;
+const int uyari_led_yesil = 10;
+const int uyari_ses = 7;
 
 void setup() {
    pinMode(trig,OUTPUT);
    pinMode(echo,INPUT);
    
-   pinMode(uyari, OUTPUT);
+   pinMode(uyari_led_kirmizi, OUTPUT);
+   pinMode(uyari_led_sari, OUTPUT);
+   pinMode(uyari_led_yesil, OUTPUT);
+   pinMode(uyari_ses, OUTPUT);
    
    lcd.begin(16,2);
    Serial.begin(9600); // Seri iletişimi başlatıyoruz.
@@ -46,19 +52,67 @@ void loop() {
   
   if(temperature>=10 && temperature<24)
       {if(mesafe>=5 && mesafe<15)
-          digitalWrite(uyari, HIGH);
+          {digitalWrite(uyari_led_kirmizi, HIGH);
+          digitalWrite(uyari_led_sari, LOW);
+          digitalWrite(uyari_led_yesil, LOW);
+          digitalWrite(uyari_ses, HIGH);
+          delay(50);
+          digitalWrite(uyari_ses, LOW);
+          delay(50);}
+       if(mesafe>=15 && mesafe<25)
+          {digitalWrite(uyari_led_kirmizi, LOW);
+          digitalWrite(uyari_led_sari, HIGH);
+          digitalWrite(uyari_led_yesil, LOW);
+          digitalWrite(uyari_ses, HIGH);
+          delay(100);
+          digitalWrite(uyari_ses, LOW);
+          delay(100);}   
        else
-          digitalWrite(uyari, LOW);}
+          {digitalWrite(uyari_led_kirmizi, LOW);
+          digitalWrite(uyari_led_sari,  LOW);
+          digitalWrite(uyari_led_yesil, HIGH);}}
   else if(temperature>=24 && temperature<30)        
-      {if(mesafe>=15 && mesafe<25)
-          digitalWrite(uyari, HIGH);
+      {if(mesafe>=10 && mesafe<20)
+          {digitalWrite(uyari_led_kirmizi, HIGH);
+          digitalWrite(uyari_led_sari, LOW);
+          digitalWrite(uyari_led_yesil, LOW);
+          digitalWrite(uyari_ses, HIGH);
+          delay(50);
+          digitalWrite(uyari_ses, LOW);
+          delay(50);}
+       if(mesafe>=20 && mesafe<30)
+          {digitalWrite(uyari_led_kirmizi, LOW);
+          digitalWrite(uyari_led_sari, HIGH);
+          digitalWrite(uyari_led_yesil, LOW);
+          digitalWrite(uyari_ses, HIGH);
+          delay(100);
+          digitalWrite(uyari_ses, LOW);
+          delay(100);}   
        else
-          digitalWrite(uyari, LOW);}    
+          {digitalWrite(uyari_led_kirmizi, LOW);
+          digitalWrite(uyari_led_sari,  LOW);
+          digitalWrite(uyari_led_yesil, HIGH);}}   
   else if(temperature>=30 && temperature<45)        
-      {if(mesafe>=25 && mesafe<35)
-          digitalWrite(uyari, HIGH);
+      {if(mesafe>=15 && mesafe<25)
+          {digitalWrite(uyari_led_kirmizi, HIGH);
+          digitalWrite(uyari_led_sari, LOW);
+          digitalWrite(uyari_led_yesil, LOW);
+          digitalWrite(uyari_ses, HIGH);
+          delay(50);
+          digitalWrite(uyari_ses, LOW);
+          delay(50);}
+       if(mesafe>=25 && mesafe<35)
+          {digitalWrite(uyari_led_kirmizi, LOW);
+          digitalWrite(uyari_led_sari, HIGH);
+          digitalWrite(uyari_led_yesil, LOW);
+          digitalWrite(uyari_ses, HIGH);
+          delay(100);
+          digitalWrite(uyari_ses, LOW);
+          delay(100);}   
        else
-          digitalWrite(uyari, LOW);}    
+          {digitalWrite(uyari_led_kirmizi, LOW);
+          digitalWrite(uyari_led_sari,  LOW);
+          digitalWrite(uyari_led_yesil, HIGH);}}
   
   Serial.print("Sicaklik: ");
   Serial.println(degisken);
@@ -124,11 +178,8 @@ float getTemp(){
   float tempRead = ((MSB << 8) | LSB); //using two's compliment
   float TemperatureSum = tempRead / 16;
 
-  return TemperatureSum;,30
+  return TemperatureSum;
 
 
 
 }
-
-
-
